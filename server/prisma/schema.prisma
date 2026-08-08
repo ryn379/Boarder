@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum FlightStatus{
+  SCHEDULED
+  BOARDING
+  DELAYED
+  DEPARTED
+}
+
+model Flight{
+  id                    String            @id @default(cuid())
+  flightCode            String            @unique
+  aircraft              String
+  airline               String
+  origin                String
+  destination           String
+  departure             DateTime
+  arrival               DateTime
+  gate                  String?
+  terminal              String?
+  delay                 Int               @default(0)
+  status                FlightStatus      @default(SCHEDULED)
+  boardingStarted       DateTime?
+  layouts               String[]
+  seats                 Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  passengers            Passenger[]
+  boardingSession       BoardingSession?
+}
+
+
+model Passenger{
+  id                   String            @id @default(cuid())
+  name                 String
+  seat                 String            
+  row                  Int
+  col                  Int
+  boarded              Boolean           @default(false)
+
+  flightId             String
+  flight               Flight @relation(fields: [flightId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([flightId])
+  @@unique([flightId,seat])
+}
+
+model BoardingSession{
+  id                   String            @id @default(cuid())
+
+  sequence             Json
+  boardedMatrix        Json
+
+  startTime         DateTime
+  endTime           DateTime?
+
+  totalPassengers   Int       @default(0)
+  boardedPassengers Int       @default(0)
+
+  boardingEvents      Json     @default("[]")
+  noShows             Json     @default("[]")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  flightId         String     @unique
+  flight           Flight @relation(fields:[flightId], references: [id], onDelete: Cascade)
+}
+
