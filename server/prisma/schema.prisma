@@ -50,11 +50,12 @@ model Passenger{
   row                  Int
   col                  Int
   boarded              Boolean           @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   flightId             String
   flight               Flight @relation(fields: [flightId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@index([flightId])
   @@unique([flightId,seat])
@@ -82,3 +83,27 @@ model BoardingSession{
   flight           Flight @relation(fields:[flightId], references: [id], onDelete: Cascade)
 }
 
+model User{
+  id String @id @default(uuid())
+  username String 
+  email String @unique
+  password String 
+  createdAt DateTime @default(now())
+
+  sessions Session[]
+}
+
+model Session{
+  id String @id @default(cuid())
+  refreshTokenHash String @unique
+  ip String?
+  userAgent String?
+  revoked Boolean @default(false)
+  userId String 
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  @@index([userId])
+}

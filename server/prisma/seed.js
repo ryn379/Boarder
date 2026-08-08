@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma.js";
+import { prisma } from "../../lib/db.js";
 import { flights, passengers } from "../data.js";
 
 async function main() {

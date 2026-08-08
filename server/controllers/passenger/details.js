@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma.js";
+import { prisma } from "../../lib/db.js";
 import { SteffenPerfect } from "../../steffen.js";
 
 export default async function passengerDetails(req, res) {
