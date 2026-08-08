@@ -12,7 +12,7 @@ export async function register(req, res) {
     });
 
     if (isAlreadyRegistered) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: "User Already Registered",
       });
@@ -92,7 +92,7 @@ export async function login(req, res) {
     });
 
     if (!user) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "User Not Registered",
       });
@@ -160,7 +160,7 @@ export async function logout(req, res) {
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "Token Not Found",
       });
@@ -177,7 +177,7 @@ export async function logout(req, res) {
 
     if (!session) {
       res.clearCookie("refreshToken");
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "Session Not Found",
       });
@@ -203,4 +203,74 @@ export async function logout(req, res) {
   }
 }
 
-export async function refresh(req, res) {}
+export async function refresh(req, res) {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: "Refresh Token Not Found",
+      });
+    }
+
+    const refreshTokenHash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+    const session = await prisma.session.findUnique({
+      where: { refreshTokenHash },
+    });
+
+    if (!session || session.revoked || session.expiresAt < new Date()) {
+      return res.status(401).json({
+        success: false,
+        message: "Session Not Found or Logged Out",
+      });
+    }
+
+    const accessToken = jwt.sign(
+      { id: session.userId, sessionId: session.id },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" },
+    );
+
+    const newRefreshToken = jwt.sign(
+      { id: session.userId },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" },
+    );
+
+    const newRefreshTokenHash = crypto
+      .createHash("sha256")
+      .update(newRefreshToken)
+      .digest("hex");
+
+    await prisma.session.update({
+      where: { id: session.id },
+      data: { refreshTokenHash: newRefreshTokenHash },
+    });
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Token refreshed Successfully",
+      accessToken,
+    });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+}

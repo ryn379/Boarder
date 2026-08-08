@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma.js";
+import { prisma } from "../../lib/db.js";
 
 export default async function sessionNames(req, res) {
   try {
