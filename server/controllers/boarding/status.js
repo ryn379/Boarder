@@ -3,17 +3,7 @@ import { prisma } from "../../lib/db.js";
 export default async function boardingStatus(req, res) {
   try {
     const { flightId } = req.params;
-
-    const flight = await prisma.flight.findUnique({
-      where: { flightCode: flightId },
-    });
-
-    if (!flight) {
-      return res.status(404).json({
-        success: false,
-        message: "Flight not found in status.js",
-      });
-    }
+    const flight = req.flight;
 
     const session = await prisma.boardingSession.findUnique({
       where: { flightId: flight.id },

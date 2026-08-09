@@ -12,6 +12,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserRole {
+  PASSENGER
+  STAFF
+}
+
 enum FlightStatus{
   SCHEDULED
   BOARDING
@@ -50,9 +55,13 @@ model Passenger{
   row                  Int
   col                  Int
   boarded              Boolean           @default(false)
+  bookingRef    String   @unique
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  userId    String?   @unique
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   flightId             String
   flight               Flight @relation(fields: [flightId], references: [id], onDelete: Cascade)
@@ -87,10 +96,12 @@ model User{
   id String @id @default(uuid())
   username String 
   email String @unique
+  role      UserRole @default(PASSENGER)
   password String 
   createdAt DateTime @default(now())
 
   sessions Session[]
+  passenger Passenger?
 }
 
 model Session{

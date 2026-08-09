@@ -1,11 +1,10 @@
+import api from "../api/axios.js";
+
 export default async function handleHome() {
   try {
-    const id = "cmsg0lc5n000qw6gpl5tuelyk";
-    const response = await fetch(
-      `http://localhost:8008/api/passenger/${id}/details`,
-    );
+    const response = await api.get(`/passenger/details`);
 
-    const data = await response.json();
+    const data = response.data;
     if (!data.success) {
       console.log("data not reached, this is in handleHome.js");
       console.log(data);

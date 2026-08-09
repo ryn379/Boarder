@@ -1,11 +1,11 @@
+import api from "../api/axios.js";
+
 export default async function loadTable(flightId) {
   try {
     console.log(flightId);
-    const response = await fetch(
-      `http://localhost:8008/api/boarding/${flightId}/status`,
-    );
+    const response = await api.get(`/boarding/${flightId}/status`);
 
-    const data = await response.json();
+    const data = response.data;
     if (!data.success) {
       console.log(data.message);
       console.log("This is in loadTable.js");

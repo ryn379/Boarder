@@ -2,28 +2,8 @@ import { prisma } from "../../lib/db.js";
 
 export default async function passengerSeated(req, res) {
   try {
-    const { flightId } = req.params;
-    let { queueNumber } = req.body;
-
-    queueNumber = parseInt(queueNumber);
-
-    if (Number.isNaN(queueNumber)) {
-      return res.status(400).json({
-        success: false,
-        message: "queueNumber is required",
-      });
-    }
-
-    const flight = await prisma.flight.findUnique({
-      where: { flightCode: flightId },
-    });
-
-    if (!flight) {
-      return res.status(404).json({
-        success: false,
-        message: "Flight Not found in seated.js",
-      });
-    }
+    const flight = req.flight;
+    const passenger = req.passenger;
 
     const session = await prisma.boardingSession.findUnique({
       where: { flightId: flight.id },
@@ -36,38 +16,48 @@ export default async function passengerSeated(req, res) {
       });
     }
 
-    const sequence = session.sequence;
-    const boardedMatrix = session.boardedMatrix;
+    const sequence = Array.isArray(session.sequence) ? session.sequence : [];
+    const boardedMatrix = Array.isArray(session.boardedMatrix)
+      ? session.boardedMatrix
+      : [];
 
-    const passenger = sequence.find((item) => item.queueNumber === queueNumber);
+    const passengerInSequence = sequence.find(
+      (item) => item.id === passenger.id,
+    );
 
-    if (!passenger) {
+    if (!passengerInSequence) {
       return res.status(404).json({
         success: false,
-        message: "Passenger not found",
+        message: "Passenger not found in boarding sequence",
       });
     }
 
-    if (boardedMatrix[passenger.row][passenger.col]) {
+    if (boardedMatrix[passengerInSequence.row][passengerInSequence.col]) {
       return res.status(400).json({
         success: false,
         message: "Passenger is already seated",
       });
     }
 
-    boardedMatrix[passenger.row][passenger.col] = true;
+    boardedMatrix[passengerInSequence.row][passengerInSequence.col] = true;
+
     await prisma.passenger.update({
-      where: { id: passenger.id },
+      where: { id: passengerInSequence.id },
       data: { boarded: true },
     });
 
     const boardedPassengers = session.boardedPassengers + 1;
-    const group = passenger.row <= 10 ? "A" : passenger.row <= 20 ? "B" : "C";
+    const group =
+      passengerInSequence.row <= 10
+        ? "A"
+        : passengerInSequence.row <= 20
+          ? "B"
+          : "C";
     const boardedEvent = {
-      id: passenger.id,
-      queueNumber: passenger.queueNumber,
-      name: passenger.name,
-      seat: passenger.seat,
+      id: passengerInSequence.id,
+      queueNumber: passengerInSequence.queueNumber,
+      name: passengerInSequence.name,
+      seat: passengerInSequence.seat,
       group,
       boardedAt: new Date().toISOString(),
     };
@@ -88,7 +78,7 @@ export default async function passengerSeated(req, res) {
 
     res.json({
       success: true,
-      seatedPassenger: passenger,
+      seatedPassenger: passengerInSequence,
       seatedCount: boardedPassengers,
       totalPassengers: session.totalPassengers,
       boardedMatrix,

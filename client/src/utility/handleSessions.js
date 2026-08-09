@@ -1,8 +1,10 @@
+import api from "../api/axios.js";
+
 export default async function getSessions() {
   console.log("this is in handleSessions");
   try {
-    const response = await fetch("http://localhost:8008/api/sessions/flights");
-    const data = await response.json();
+    const response = await api.get("./sessions/flights");
+    const data = response.data;
     if (!data.success) {
       alert(data.message);
       return;

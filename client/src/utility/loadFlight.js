@@ -1,7 +1,9 @@
+import api from "../api/axios.js";
+
 export default async function loadFlights({ flight, setFlight, setFlights }) {
   try {
-    const response = await fetch("http://localhost:8008/api/sessions");
-    const data = await response.json();
+    const response = await api.get("/sessions");
+    const data = response.data;
     setFlights(data.flightNames);
 
     const hasCurrentFlight = typeof flight === "string" && flight.length > 0;

@@ -3,9 +3,24 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../../lib/db.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: "strict",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
+
 export async function register(req, res) {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, bookingRef } = req.body;
+
+    if (!username || !email || !password || !bookingRef) {
+      return res.status(400).json({
+        success: false,
+        message: "Username, email, password and booking reference are required",
+      });
+    }
 
     const isAlreadyRegistered = await prisma.user.findUnique({
       where: { email },
@@ -18,6 +33,26 @@ export async function register(req, res) {
       });
     }
 
+    const passenger = await prisma.passenger.findUnique({
+      where: {
+        bookingRef,
+      },
+    });
+
+    if (!passenger) {
+      return res.status(404).json({
+        success: false,
+        message: "Invalid booking reference",
+      });
+    }
+
+    if (passenger.userId) {
+      return res.status(409).json({
+        success: false,
+        message: "This passenger already has an account",
+      });
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
@@ -25,7 +60,14 @@ export async function register(req, res) {
         username,
         email,
         password: passwordHash,
+
+        passenger: {
+          connect: {
+            id: passenger.id,
+          },
+        },
       },
+
       select: {
         id: true,
         username: true,
@@ -59,12 +101,7 @@ export async function register(req, res) {
       { expiresIn: "15m" },
     );
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
     res.status(200).json({
       success: true,
@@ -87,14 +124,33 @@ export async function login(req, res) {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
+    }
+
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: {
+        email,
+      },
+      include: {
+        passenger: true,
+      },
     });
 
     if (!user) {
       return res.status(401).json({
         success: false,
         message: "User Not Registered",
+      });
+    }
+
+    if (user.role === "PASSENGER" && !user.passenger) {
+      return res.status(403).json({
+        success: false,
+        message: "No passenger profile linked to this account",
       });
     }
 
@@ -131,12 +187,7 @@ export async function login(req, res) {
       { expiresIn: "15m" },
     );
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
     res.status(200).json({
       success: true,
@@ -225,10 +276,15 @@ export async function refresh(req, res) {
       where: { refreshTokenHash },
     });
 
-    if (!session || session.revoked || session.expiresAt < new Date()) {
+    if (
+      !session ||
+      session.revoked ||
+      session.expiresAt < new Date() ||
+      session.userId !== decoded.id
+    ) {
       return res.status(401).json({
         success: false,
-        message: "Session Not Found or Logged Out",
+        message: "Invalid Session",
       });
     }
 
@@ -254,12 +310,7 @@ export async function refresh(req, res) {
       data: { refreshTokenHash: newRefreshTokenHash },
     });
 
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("refreshToken", newRefreshToken, refreshCookieOptions);
 
     res.status(200).json({
       success: true,

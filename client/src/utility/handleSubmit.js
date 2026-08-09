@@ -1,3 +1,5 @@
+import api from "../api/axios.js";
+
 export default async function handleLookUpSubmit({ flight, search }) {
   console.log(flight);
   console.log(search);
@@ -10,10 +12,13 @@ export default async function handleLookUpSubmit({ flight, search }) {
     return;
   }
   try {
-    const response = await fetch(
-      `http://localhost:8008/api/passenger/${flight}/${search}/search`,
-    );
-    const data = await response.json();
+    const response = await api.get(`/passenger/${flight}/search`, {
+      params: {
+        input: search.trim(),
+      },
+    });
+
+    const data = response.data;
     if (!data.success) {
       console.log("this is in handleSubmit.js");
       alert(data.message);

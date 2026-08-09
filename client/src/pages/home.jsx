@@ -100,7 +100,7 @@ function Loaded({ data }) {
     const interval = setInterval(loadBoardingStatus, 2000);
 
     return () => clearInterval(interval);
-  }, [flightCode, passenger.queue]);
+  }, [flightCode]);
 
   async function handleSeat() {
     if (seated || seating) return;
@@ -109,7 +109,7 @@ function Loaded({ data }) {
     setSeatError("");
 
     try {
-      const data = await markSeated(flightCode, passenger.queue);
+      const data = await markSeated(flightCode);
 
       if (!data?.success) {
         setSeatError(data?.message || "Seat could not be marked");

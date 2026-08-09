@@ -1,16 +1,9 @@
-export default async function markSeated(flightId, queueNumber) {
+import api from "../api/axios.js";
+
+export default async function markSeated(flightId) {
   try {
-    const response = await fetch(
-      `http://localhost:8008/api/boarding/${flightId}/seated`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          queueNumber,
-        }),
-      },
-    );
-    const data = await response.json();
+    const response = await api.post(`/boarding/${flightId}/seated`);
+    const data = response.data;
     if (!data.success) {
       console.log("Data not found in markSeated.js");
       console.log(data.message);

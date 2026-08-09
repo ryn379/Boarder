@@ -21,10 +21,6 @@ export default async function flightSearch(req, res) {
       where: { flightId: flight.id },
     });
 
-    console.log(flight);
-    console.log(flight.passengers.length);
-    console.log(flight.passengers);
-
     const seq = SteffenPerfect(flight);
     const groups = BoardingGroups(seq, flight.layouts);
 

@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useAuth from "../context/useAuth.js";
 
 const links = [
-  { to: "/", label: "Home" },
+  { to: "/home", label: "Home" },
   { to: "/lookup", label: "Look Up" },
   { to: "/groups", label: "Groups" },
   { to: "/aircraft", label: "Aircraft" },
@@ -10,8 +11,16 @@ const links = [
 ];
 
 export default function Navbar() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/login", { replace: true });
+  }
+
   return (
-    <div className="bg-[#F5F3EE] font-sans">
+    <div>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
       `}</style>
@@ -28,6 +37,15 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
+
+          <li>
+            <button
+              onClick={handleLogout}
+              className="block font-mono text-sm tracking-wide px-4 py-2 rounded-lg text-[#D9534F] transition-colors duration-200 hover:bg-[#D9534F] hover:text-white"
+            >
+              Logout
+            </button>
+          </li>
         </ul>
       </div>
     </div>
