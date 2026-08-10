@@ -3,6 +3,8 @@ import handleHome from "../utility/handleHome.js";
 import markSeated from "../utility/markSeated.js";
 import loadTable from "../utility/loadTable.js";
 
+import socket from "../socket.js";
+
 const STATUS_COLORS = {
   Boarding: { fg: "#F2A93B", bg: "rgba(242,169,59,0.14)" },
   "On Time": { fg: "#2FA867", bg: "rgba(47,168,103,0.14)" },
@@ -66,19 +68,14 @@ function Loaded({ data }) {
   const [seatError, setSeatError] = useState("");
 
   const statusColor = STATUS_COLORS[status] || STATUS_COLORS["On Time"];
-  useEffect(() => {
-    async function loadBoardingStatus() {
-      if (!flightCode) {
-        setStatus("On Time");
-        return;
-      }
 
+  useEffect(() => {
+    if (!flightCode) return;
+
+    async function loadInitialBoardingState() {
       const result = await loadTable(flightCode);
 
-      if (!result) {
-        setStatus("On Time");
-        return;
-      }
+      if (!result) return;
 
       setStatus(result.boardingComplete ? "Departed" : "Boarding");
 
@@ -90,17 +87,30 @@ function Loaded({ data }) {
         setSeated(
           result.boardedMatrix[targetPassenger.row][targetPassenger.col],
         );
-      } else {
-        setSeated(false);
       }
     }
 
-    loadBoardingStatus();
+    loadInitialBoardingState();
 
-    const interval = setInterval(loadBoardingStatus, 2000);
+    socket.emit("joinFlight", flightCode);
 
-    return () => clearInterval(interval);
-  }, [flightCode]);
+    socket.on("boardingUpdate", (data) => {
+      if (data.flightCode !== flightCode) return;
+
+      setStatus(data.boardingComplete ? "Departed" : "Boarding");
+
+      const targetPassenger = data.passengers?.find(
+        (entry) => entry.queueNumber === passenger.queue,
+      );
+
+      if (targetPassenger) {
+        setSeated(data.boardedMatrix[targetPassenger.row][targetPassenger.col]);
+      }
+    });
+    return () => {
+      socket.off("boardingUpdate");
+    };
+  }, [flightCode, passenger.queue]);
 
   async function handleSeat() {
     if (seated || seating) return;

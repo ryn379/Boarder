@@ -27,7 +27,7 @@ router.post(
   passengerSeated,
 );
 router.post("/:flightId/group", authenticate, staff, nextGroup);
-router.get("/:flightId", flightSearch);
+router.get("/:flightId", authenticate, authorizeFlight, flightSearch);
 router.get("/:flightId/status", authenticate, authorizeFlight, boardingStatus);
 router.get("/:flightId/analytics", authenticate, getAnalytics);
 

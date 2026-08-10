@@ -1,5 +1,7 @@
 import { prisma } from "../../lib/db.js";
 
+import { getIO } from "../../socket.js";
+
 export default async function passengerSeated(req, res) {
   try {
     const flight = req.flight;
@@ -74,6 +76,23 @@ export default async function passengerSeated(req, res) {
             ? new Date()
             : undefined,
       },
+    });
+
+    const io = getIO();
+    io.to(flight.flightCode).emit("boardingUpdate", {
+      flightCode: flight.flightCode,
+      passengers: sequence.map((passenger) => ({
+        ...passenger,
+        seated: boardedMatrix[passenger.row][passenger.col],
+      })),
+      seatedCount: boardedPassengers,
+      totalPassengers: session.totalPassengers,
+      progress:
+        session.totalPassengers === 0
+          ? 100
+          : Math.round((boardedPassengers / session.totalPassengers) * 100),
+      boardedMatrix,
+      boardingComplete: boardedPassengers === session.totalPassengers,
     });
 
     res.json({

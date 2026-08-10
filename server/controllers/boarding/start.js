@@ -1,6 +1,8 @@
 import { prisma } from "../../lib/db.js";
 import { SteffenPerfect } from "../../steffen.js";
 
+import { getIO } from "../../socket.js";
+
 export default async function startBoarding(req, res) {
   try {
     const { flightId } = req.params;
@@ -48,6 +50,25 @@ export default async function startBoarding(req, res) {
         startTime: new Date(),
         totalPassengers: sequence.length,
       },
+    });
+
+    const io = getIO();
+
+    io.to(flight.flightCode).emit("boardingUpdate", {
+      flightCode: flight.flightCode,
+      passengers: sequence.map((passenger) => ({
+        ...passenger,
+        seated: boardedMatrix[passenger.row][passenger.col],
+      })),
+      seatedCount: 0,
+      totalPassengers: sequence.length,
+      progress: 0,
+      boardedMatrix,
+      boardingComplete: false,
+    });
+
+    io.emit("sessionStarted", {
+      flightCode: flight.flightCode,
     });
 
     res.json({

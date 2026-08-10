@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import handleLookUpSubmit from "../utility/handleSubmit.js";
 import loadFlights from "../utility/loadFlight.js";
 
+import socket from "../socket.js";
+
 export default function LookUp() {
   const [flights, setFlights] = useState([]); // all flights
   const [flight, setFlight] = useState(""); //first flight
@@ -17,8 +19,16 @@ export default function LookUp() {
 
   useEffect(() => {
     loadFlights({ flight, setFlight, setFlights });
-    const id = setInterval(() => loadFlights({ setFlight, setFlights }), 5000);
-    return () => clearInterval(id);
+
+    const handleSessionStarted = () => {
+      loadFlights({ flight, setFlight, setFlights });
+    };
+
+    socket.on("sessionStarted", handleSessionStarted);
+
+    return () => {
+      socket.off("sessionStarted", handleSessionStarted);
+    };
   }, []);
 
   return (

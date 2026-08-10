@@ -2,6 +2,8 @@ import { Fragment, useEffect, useState } from "react";
 import loadTable from "../utility/loadTable.js";
 import loadFlights from "../utility/loadFlight.js";
 
+import socket from "../socket.js";
+
 function OrderTable() {
   const [flight, setFlight] = useState("");
   const [flights, setFlights] = useState([]);
@@ -15,7 +17,7 @@ function OrderTable() {
   useEffect(() => {
     if (!flight) return;
 
-    const load = async () => {
+    const loadInitial = async () => {
       const data = await loadTable(flight);
 
       if (!data?.success) return;
@@ -27,21 +29,38 @@ function OrderTable() {
       setBoardingComplete(data.boardingComplete);
     };
 
-    load();
+    loadInitial();
 
-    const id = setInterval(load, 2000);
+    const handleBoardingUpdate = (data) => {
+      if (data.flightCode !== flight) return;
 
-    return () => clearInterval(id);
+      setBoardedMatrix(data.boardedMatrix);
+      setProgress(data.progress);
+      setSeatedCount(data.seatedCount);
+      setTotalPassengers(data.totalPassengers);
+      setBoardingComplete(data.boardingComplete);
+    };
+
+    socket.emit("joinFlight", flight);
+    socket.on("boardingUpdate", handleBoardingUpdate);
+
+    return () => {
+      socket.off("boardingUpdate", handleBoardingUpdate);
+    };
   }, [flight]);
 
   useEffect(() => {
     loadFlights({ flight, setFlight, setFlights });
 
-    const id = setInterval(() => {
-      loadFlights({ setFlight, setFlights });
-    }, 5000);
+    const handleSessionStarted = () => {
+      loadFlights({ flight, setFlight, setFlights });
+    };
 
-    return () => clearInterval(id);
+    socket.on("sessionStarted", handleSessionStarted);
+
+    return () => {
+      socket.off("sessionStarted", handleSessionStarted);
+    };
   }, []);
 
   return (
