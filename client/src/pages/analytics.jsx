@@ -44,7 +44,7 @@ function Analytics() {
   if (!analytics) {
     if (error) {
       return (
-        <div className="min-h-screen bg-[#F5F3EE] font-sans text-[#0B1D3A] p-8">
+        <div className="min-h-screen bg-[#F7F7F5] font-sans text-[#0B1D3A] p-8">
           {fontImport}
           <div className="mx-auto max-w-7xl rounded-xl bg-white p-8 border border-[#E4E0D6] shadow-sm">
             <h1 className="text-2xl font-semibold font-['Space_Grotesk',sans-serif]">
@@ -58,7 +58,7 @@ function Analytics() {
 
     if (flights.length === 0) {
       return (
-        <div className="min-h-screen bg-[#F5F3EE] font-sans text-[#0B1D3A] p-8">
+        <div className="min-h-screen bg-[#F7F7F5] font-sans text-[#0B1D3A] p-8">
           {fontImport}
           <div className="mx-auto max-w-7xl rounded-xl bg-white p-8 border border-[#E4E0D6] shadow-sm">
             <h1 className="text-2xl font-semibold font-['Space_Grotesk',sans-serif]">
@@ -83,7 +83,7 @@ function Analytics() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F3EE] font-sans text-[#0B1D3A] p-8">
+    <div className="min-h-screen bg-[#F7F7F5] font-sans text-[#0B1D3A] p-8">
       {fontImport}
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex items-center justify-between">

@@ -31,7 +31,7 @@ export default function Navbar() {
             <li key={link.to}>
               <Link
                 to={link.to}
-                className="block font-mono text-sm tracking-wide px-4 py-2 rounded-lg text-[#5B6472] transition-colors duration-200 hover:bg-[#0B1D3A] hover:text-[#F5F3EE]"
+                className="block font-mono text-sm tracking-wide px-4 py-2 rounded-lg text-[#5B6472] transition-colors duration-200 hover:bg-[#0B1D3A] hover:text-[#F7F7F5]"
               >
                 {link.label}
               </Link>

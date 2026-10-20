@@ -27,7 +27,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F5F3EE] font-sans text-[#0B1D3A]">
+    <div className="min-h-screen bg-[#F7F7F5] font-sans text-[#0B1D3A]">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
         .board-char {
@@ -145,7 +145,7 @@ function Loaded({ data }) {
   return (
     <div className="max-w-220 mx-auto pb-16">
       {/* Departure board hero */}
-      <div className="bg-[#0B1D3A] px-8 py-7 text-[#F5F3EE]">
+      <div className="bg-[#0B1D3A] px-8 py-7 text-[#F7F7F5]">
         <div className="flex justify-between items-start flex-wrap gap-4">
           <div>
             <div className="font-mono text-[13px] tracking-[0.2em] text-[#7C8698] mb-1.5">
@@ -240,8 +240,8 @@ function Loaded({ data }) {
             </div>
             <div className="flex gap-10 flex-wrap items-center">
               <Stat label="Queue" value={passenger.queue} color="#F2A93B" />
-              <Stat label="Seat" value={passenger.seat} color="#F5F3EE" />
-              <Stat label="Gate" value={flight.gate} color="#F5F3EE" />
+              <Stat label="Seat" value={passenger.seat} color="#F7F7F5" />
+              <Stat label="Gate" value={flight.gate} color="#F7F7F5" />
 
               <div className="flex flex-col items-center gap-1.5">
                 <button
@@ -269,13 +269,13 @@ function Loaded({ data }) {
           </div>
 
           {/* perforation */}
-          <div className="absolute w-5 h-5 rounded-full bg-[#F5F3EE] top-1/2 -translate-y-1/2 -left-2.5" />
-          <div className="absolute w-5 h-5 rounded-full bg-[#F5F3EE] top-1/2 -translate-y-1/2 right-32.5" />
+          <div className="absolute w-5 h-5 rounded-full bg-[#F7F7F5] top-1/2 -translate-y-1/2 -left-2.5" />
+          <div className="absolute w-5 h-5 rounded-full bg-[#F7F7F5] top-1/2 -translate-y-1/2 right-32.5" />
           <div className="absolute right-35 top-3 bottom-3 border-l-2 border-dashed border-[#2A3B5C]" />
 
           <div className="w-35 flex flex-col items-center justify-center p-4">
             <div
-              className="font-['Space_Grotesk',sans-serif] text-[22px] font-bold text-[#F5F3EE] tracking-widest"
+              className="font-['Space_Grotesk',sans-serif] text-[22px] font-bold text-[#F7F7F5] tracking-widest"
               style={{ writingMode: "vertical-rl" }}
             >
               {flight.id}
@@ -294,7 +294,7 @@ function BoardBlock({ label, value, small }) {
         {label}
       </div>
       <div
-        className={`font-semibold text-[#F5F3EE] ${
+        className={`font-semibold text-[#F7F7F5] ${
           small ? "text-xl" : "text-[30px]"
         }`}
       >

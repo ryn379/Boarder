@@ -53,7 +53,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F3EE] flex items-center justify-center px-6">
+    <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center px-6">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <p className="font-mono text-xs tracking-[0.2em] text-[#7C8698] mb-3">
@@ -108,7 +108,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#0B1D3A] text-[#F5F3EE] py-3 rounded-lg font-semibold transition hover:brightness-110 disabled:opacity-60"
+            className="w-full bg-[#0B1D3A] text-[#F7F7F5] py-3 rounded-lg font-semibold transition hover:brightness-110 disabled:opacity-60"
           >
             {loading ? "Signing In..." : "Sign In"}
           </button>

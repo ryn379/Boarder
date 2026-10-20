@@ -64,7 +64,7 @@ function OrderTable() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center p-8 font-mono text-[#0B1D3A] bg-[#F5F3EE] min-h-screen">
+    <div className="flex flex-col items-center p-8 font-mono text-[#0B1D3A] bg-[#F7F7F5] min-h-screen">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
       `}</style>
@@ -147,7 +147,7 @@ function OrderTable() {
                     className={`flex h-10 w-10 items-center justify-center rounded-md border text-xs font-bold transition-colors duration-300 ${
                       seat
                         ? "border-[#218a54] bg-[#2FA867] text-white"
-                        : "border-[#DCD7C9] bg-[#F5F3EE] text-[#0B1D3A]"
+                        : "border-[#DCD7C9] bg-[#F7F7F5] text-[#0B1D3A]"
                     }`}
                   >
                     {rowIndex + 1}
@@ -167,7 +167,7 @@ function OrderTable() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="h-5 w-5 rounded border border-[#0B1D3A] bg-[#F5F3EE]"></div>
+          <div className="h-5 w-5 rounded border border-[#0B1D3A] bg-[#F7F7F5]"></div>
           <span>Waiting</span>
         </div>
       </div>

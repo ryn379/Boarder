@@ -83,7 +83,7 @@ function Aircraft() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F5F3EE] p-8 text-[#0B1D3A] font-sans">
+    <div className="min-h-screen bg-[#F7F7F5] p-8 text-[#0B1D3A] font-sans">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
       `}</style>

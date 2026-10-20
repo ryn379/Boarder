@@ -32,7 +32,7 @@ export default function LookUp() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F5F3EE] font-sans text-[#0B1D3A]">
+    <div className="min-h-screen bg-[#F7F7F5] font-sans text-[#0B1D3A]">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
       `}</style>
@@ -85,7 +85,7 @@ export default function LookUp() {
 
             <button
               onClick={handleSearch}
-              className="w-full bg-[#0B1D3A] text-[#F5F3EE] rounded-lg py-3 font-semibold text-[15px] transition-colors hover:bg-[#142a52]"
+              className="w-full bg-[#0B1D3A] text-[#F7F7F5] rounded-lg py-3 font-semibold text-[15px] transition-colors hover:bg-[#142a52]"
             >
               Search
             </button>
@@ -104,7 +104,7 @@ export default function LookUp() {
             ).map((p) => (
               <div
                 key={p.id}
-                className="bg-[#F5F3EE] rounded-lg p-4.5 mb-3.5 last:mb-0 border border-[#E4E0D6]"
+                className="bg-[#F7F7F5] rounded-lg p-4.5 mb-3.5 last:mb-0 border border-[#E4E0D6]"
               >
                 <div className="grid grid-cols-2 gap-y-2.5 gap-x-6">
                   <p className="m-0">

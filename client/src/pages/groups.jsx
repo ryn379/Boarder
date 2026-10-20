@@ -20,7 +20,7 @@ export default function Groups() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F3EE] font-sans text-[#0B1D3A] p-8">
+    <div className="min-h-screen bg-[#F7F7F5] font-sans text-[#0B1D3A] p-8">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
       `}</style>
@@ -34,7 +34,7 @@ export default function Groups() {
           onChange={(e) => setFlightId(e.target.value.toUpperCase())}
         />
         <button
-          className="bg-[#0B1D3A] text-center text-[#F5F3EE] font-semibold px-4 py-2 m-4 rounded-lg transition-colors hover:bg-[#142a52]"
+          className="bg-[#0B1D3A] text-center text-[#F7F7F5] font-semibold px-4 py-2 m-4 rounded-lg transition-colors hover:bg-[#142a52]"
           onClick={() => loadGroups()}
         >
           Search
@@ -75,7 +75,7 @@ export default function Groups() {
                 {groups[g].map((p) => (
                   <div
                     key={p.queueNumber}
-                    className="rounded-lg border border-[#E4E0D6] bg-[#F5F3EE] p-3"
+                    className="rounded-lg border border-[#E4E0D6] bg-[#F7F7F5] p-3"
                   >
                     <p className="font-semibold">{p.name}</p>
 
