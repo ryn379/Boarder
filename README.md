@@ -295,7 +295,3 @@ npm run dev   # nodemon with hot reload
 - Push notifications or SMS for passenger boarding group calls
 
 ---
-
-## License
-
-No license is currently specified. Add a `LICENSE` file if you intend to distribute this project for reuse.
